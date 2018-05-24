@@ -1,0 +1,10 @@
+Django==1.11.4
+django-filters==0.2.1
+djangorestframework==3.7.1
+psycopg2==2.7.3.2
+pytz==2018.4
+Django==1.11.4
+django-filters==0.2.1
+djangorestframework==3.7.1
+psycopg2==2.7.3.2
+pytz==2018.4

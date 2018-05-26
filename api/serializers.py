@@ -62,3 +62,10 @@ class DespesaSerializer(serializers.ModelSerializer):
               'tipo_despesa')
 
 
+class TipoDespesaSerializer(serializers.Serializer):
+
+    model = TipoDespesa
+    fields = ('nome',
+              'valor_rateado')
+
+

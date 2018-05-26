@@ -54,3 +54,11 @@ class ItemTaxaSerializer(serializers.ModelSerializer):
               'taxa_condominio')
 
 
+class DespesaSerializer(serializers.ModelSerializer):
+
+    model = Despesa
+    fields = ('mes_ano',
+              'valor',
+              'tipo_despesa')
+
+

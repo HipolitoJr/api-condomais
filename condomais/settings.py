@@ -37,6 +37,15 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # api rest
+    'rest_framework',
+    'rest_framework.authtoken',
+    #'django_filters',
+
+    #My Apps
+    'api',
+    'administracao',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -76,8 +85,12 @@ WSGI_APPLICATION = 'condomais.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'db_condomais',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
     }
 }
 

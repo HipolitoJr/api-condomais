@@ -59,3 +59,9 @@ class DespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = DespesaSerializer
 
 
+class TipoDespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):
+
+    queryset = TipoDespesa.objects.all()
+    serializer_class = TipoDespesaSerializer
+
+

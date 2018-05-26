@@ -37,4 +37,12 @@ class CondominioSerializer(serializers.ModelSerializer):
               'cnpj')
 
 
+class TaxaCondominioSerializer(serializers.ModelSerializer):
+
+    model = TaxaCondominio
+    fields = ('mes_ano',
+              'data_pagamento',
+              'valor_pago',
+              'valor_a_pagar')
+
 

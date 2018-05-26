@@ -5,67 +5,82 @@ from api.models import Proprietario, UnidadeHabitacional, GrupoHabitacional, Con
 
 class ProprietarioSerializer(serializers.ModelSerializer):
 
-    model = Proprietario
-    fields = ('telefone',
-              'usuario__first_name',
-              'usuario__last_name')
+    class Meta:
+
+        model = Proprietario
+        fields = ('telefone',
+                  'usuario__first_name',
+                  'usuario__last_name')
 
 
 class UnidadeHabitacionalSerializer(serializers.ModelSerializer):
 
-    model = UnidadeHabitacional
-    fields = ('descricao',
-              'qtd_quartos',
-              'ocupacao',
-              'proprietario'
-              'grupo_habitacional')
+    class Meta:
+
+        model = UnidadeHabitacional
+        fields = ('descricao',
+                  'qtd_quartos',
+                  'ocupacao',
+                  'proprietario'
+                  'grupo_habitacional')
 
 
 class GrupoHabitacionalSerializer(serializers.ModelSerializer):
 
-    model = GrupoHabitacional
-    fields = ('descricao',
-              'qtd_unidades',
-              'condominio')
+    class Meta:
+
+        model = GrupoHabitacional
+        fields = ('descricao',
+                  'qtd_unidades',
+                  'condominio')
 
 
 class CondominioSerializer(serializers.ModelSerializer):
 
-    model = Condominio
-    fields = ('nome',
-              'endereco',
-              'cnpj')
+    class Meta:
+
+        model = Condominio
+        fields = ('nome',
+                  'endereco',
+                  'cnpj')
 
 
 class TaxaCondominioSerializer(serializers.ModelSerializer):
 
-    model = TaxaCondominio
-    fields = ('mes_ano',
-              'data_pagamento',
-              'valor_pago',
-              'valor_a_pagar')
+    class Meta:
+
+        model = TaxaCondominio
+        fields = ('mes_ano',
+                  'data_pagamento',
+                  'valor_pago',
+                  'valor_a_pagar')
 
 
 class ItemTaxaSerializer(serializers.ModelSerializer):
 
-    model = ItemTaxa
-    fields = ('descricao',
-              'valor',
-              'taxa_condominio')
+    class Meta:
+        model = ItemTaxa
+        fields = ('descricao',
+                  'valor',
+                  'taxa_condominio')
 
 
 class DespesaSerializer(serializers.ModelSerializer):
 
-    model = Despesa
-    fields = ('mes_ano',
-              'valor',
-              'tipo_despesa')
+    class Meta:
+
+        model = Despesa
+        fields = ('mes_ano',
+                  'valor',
+                  'tipo_despesa')
 
 
 class TipoDespesaSerializer(serializers.Serializer):
 
-    model = TipoDespesa
-    fields = ('nome',
-              'valor_rateado')
+    class Meta:
+
+        model = TipoDespesa
+        fields = ('nome',
+                  'valor_rateado')
 
 

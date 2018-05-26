@@ -5,14 +5,14 @@ from . import views
 router = DefaultRouter()
 
 router.register(r'proprietario', views.ProprietarioViewSet)
-router.register(r'unidadehabitarional', views.UnidadeHabitacionalViewSet)
-router.register(r'grupohabitacional', views.GrupoHabitacionalViewSet)
+router.register(r'unidade-habitarional', views.UnidadeHabitacionalViewSet)
+router.register(r'grupo-habitacional', views.GrupoHabitacionalViewSet)
 router.register(r'condominio', views.CondominioViewSet)
-router.register(r'taxaCondomio', views.TaxaCondominioViewSet)
-router.register(r'itemtaxa', views.ItemTaxaViewSet)
+router.register(r'taxa-condomio', views.TaxaCondominioViewSet)
+router.register(r'item-taxa', views.ItemTaxaViewSet)
 router.register(r'despesa', views.DespesaViewSet)
-router.register(r'tipodespesa', views.TipoDespesaViewSet)
+router.register(r'tipo-despesa', views.TipoDespesaViewSet)
 
 urlpatterns =[
-
+    url(r'^', include(router.urls)),
 ]

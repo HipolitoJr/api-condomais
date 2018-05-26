@@ -41,3 +41,9 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = CondominioSerializer
 
 
+class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
+
+    queryset = TaxaCondominio.objects.all()
+    serializer_class = TaxaCondominioSerializer
+
+

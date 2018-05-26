@@ -47,3 +47,9 @@ class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = TaxaCondominioSerializer
 
 
+class ItemTaxaViewSet(DefaultsMixin, viewsets.ModelViewSet):
+
+    queryset = ItemTaxa.objects.all()
+    serializer_class = ItemTaxaSerializer
+
+

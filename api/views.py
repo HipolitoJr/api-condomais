@@ -24,3 +24,8 @@ class ProprietarioViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = ProprietarioSerializer
 
 
+class UnidadeHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
+
+    queryset = UnidadeHabitacional.objects.all()
+    serializer_class = UnidadeHabitacionalSerializer
+

@@ -34,3 +34,10 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = GrupoHabitacional.objects.all()
     serializer_class = GrupoHabitacionalSerializer
 
+
+class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
+
+    queryset = Condominio.objects.all();
+    serializer_class = CondominioSerializer
+
+

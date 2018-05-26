@@ -46,3 +46,11 @@ class TaxaCondominioSerializer(serializers.ModelSerializer):
               'valor_a_pagar')
 
 
+class ItemTaxaSerializer(serializers.ModelSerializer):
+
+    model = ItemTaxa
+    fields = ('descricao',
+              'valor',
+              'taxa_condominio')
+
+

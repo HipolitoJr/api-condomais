@@ -1,6 +1,6 @@
 from rest_framework import serializers, exceptions
 from django.contrib.auth import get_user_model
-from api.models import Proprietario, UnidadeHabitacional
+from api.models import Proprietario, UnidadeHabitacional, GrupoHabitacional
 
 
 class ProprietarioSerializer(serializers.ModelSerializer):
@@ -10,6 +10,23 @@ class ProprietarioSerializer(serializers.ModelSerializer):
               'usuario__first_name',
               'usuario__last_name')
 
+
+class UnidadeHabitacionalSerializer(serializers.ModelSerializer):
+
+    model = UnidadeHabitacional
+    fields = ('descricao',
+              'qtd_quartos',
+              'ocupacao',
+              'proprietario'
+              'grupo_habitacional')
+
+
+class GrupoHabitacionalSerializer(serializers.ModelSerializer):
+
+    model = GrupoHabitacional
+    fields = ('descricao',
+              'qtd_unidades',
+              'condominio')
 
 
 

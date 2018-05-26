@@ -29,3 +29,8 @@ class UnidadeHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = UnidadeHabitacional.objects.all()
     serializer_class = UnidadeHabitacionalSerializer
 
+class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
+
+    queryset = GrupoHabitacional.objects.all()
+    serializer_class = GrupoHabitacionalSerializer
+

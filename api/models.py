@@ -60,4 +60,4 @@ class Despesa(models.Model):
 class TipoDespesa(models.Model):
 
     nome = models.CharField('Nome', max_length=255, null=False, blank=False)
-    valorRateado = models.BooleanField('Valor', null=False, blank=False)
+    valor_rateado = models.BooleanField('Valor', null=False, blank=False)

@@ -1,6 +1,9 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from api.models import Proprietario, UnidadeHabitacional, GrupoHabitacional, Condominio, TaxaCondominio, ItemTaxa, Despesa, TipoDespesa
-from api.serializers import ProprietarioSerializer, UnidadeHabitacionalSerializer, GrupoHabitacionalSerializer, CondominioSerializer, TaxaCondominioSerializer, ItemTaxaSerializer, DespesaSerializer, TipoDespesaSerializer
+from api.serializers import ProprietarioSerializer, UnidadeHabitacionalSerializer, GrupoHabitacionalSerializer, \
+    CondominioSerializer, TaxaCondominioSerializer, ItemTaxaSerializer, DespesaSerializer, TipoDespesaSerializer, \
+    UserSerializer
 from rest_framework import authentication, permissions, viewsets
 
 class DefaultsMixin(object):
@@ -16,6 +19,12 @@ class DefaultsMixin(object):
     paginate_by = 25
     paginate_by_param = 'page_size'
     max_paginate_by = 100
+
+
+class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class ProprietarioViewSet(DefaultsMixin, viewsets.ModelViewSet):

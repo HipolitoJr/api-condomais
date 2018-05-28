@@ -4,6 +4,7 @@ from . import views
 
 router = DefaultRouter()
 
+router.register(r'usuario', views.UserViewSet)
 router.register(r'proprietario', views.ProprietarioViewSet)
 router.register(r'unidade-habitacional', views.UnidadeHabitacionalViewSet)
 router.register(r'grupo-habitacional', views.GrupoHabitacionalViewSet)

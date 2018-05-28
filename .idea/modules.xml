@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/condomais.iml" filepath="$PROJECT_DIR$/.idea/condomais.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/api-condomais.iml" filepath="$PROJECT_DIR$/.idea/api-condomais.iml" />
     </modules>
   </component>
 </project>

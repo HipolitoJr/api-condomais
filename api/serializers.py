@@ -1,16 +1,28 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers, exceptions
 from django.contrib.auth import get_user_model
 from api.models import Proprietario, UnidadeHabitacional, GrupoHabitacional, Condominio, TaxaCondominio, ItemTaxa, Despesa, TipoDespesa
 
 
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = User
+        fields = ('username',
+                  'email',
+                  'password',)
+
+
 class ProprietarioSerializer(serializers.ModelSerializer):
+
+    #usuario = UserSerializer(many=False)
 
     class Meta:
 
         model = Proprietario
-        fields = ('telefone',
-                  'usuario__first_name',
-                  'usuario__last_name')
+        fields = ('usuario',
+                  'telefone',)
 
 
 class UnidadeHabitacionalSerializer(serializers.ModelSerializer):

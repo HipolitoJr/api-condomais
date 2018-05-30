@@ -33,8 +33,8 @@ class UnidadeHabitacionalSerializer(serializers.ModelSerializer):
         fields = ('descricao',
                   'qtd_quartos',
                   'ocupacao',
-                  'proprietario'
-                  'grupo_habitacional')
+                  'proprietario',
+                  'grupo_habitacional',)
 
 
 class GrupoHabitacionalSerializer(serializers.ModelSerializer):
@@ -44,7 +44,7 @@ class GrupoHabitacionalSerializer(serializers.ModelSerializer):
         model = GrupoHabitacional
         fields = ('descricao',
                   'qtd_unidades',
-                  'condominio')
+                  'condominio',)
 
 
 class CondominioSerializer(serializers.ModelSerializer):
@@ -54,7 +54,7 @@ class CondominioSerializer(serializers.ModelSerializer):
         model = Condominio
         fields = ('nome',
                   'endereco',
-                  'cnpj')
+                  'cnpj',)
 
 
 class TaxaCondominioSerializer(serializers.ModelSerializer):
@@ -62,10 +62,12 @@ class TaxaCondominioSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = TaxaCondominio
-        fields = ('mes_ano',
+        fields = ('id',
+                  'mes_ano',
                   'data_pagamento',
                   'valor_pago',
-                  'valor_a_pagar')
+                  'valor_a_pagar',
+                  'unidade_habitacional',)
 
 
 class ItemTaxaSerializer(serializers.ModelSerializer):
@@ -74,7 +76,7 @@ class ItemTaxaSerializer(serializers.ModelSerializer):
         model = ItemTaxa
         fields = ('descricao',
                   'valor',
-                  'taxa_condominio')
+                  'taxa_condominio',)
 
 
 class DespesaSerializer(serializers.ModelSerializer):
@@ -82,17 +84,18 @@ class DespesaSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Despesa
-        fields = ('mes_ano',
+        fields = ('id',
+                  'mes_ano',
                   'valor',
-                  'tipo_despesa')
+                  'tipo_despesa',)
 
 
-class TipoDespesaSerializer(serializers.Serializer):
+class TipoDespesaSerializer(serializers.ModelSerializer):
 
     class Meta:
 
         model = TipoDespesa
         fields = ('nome',
-                  'valor_rateado')
+                  'valor_rateado',)
 
 

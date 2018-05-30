@@ -103,6 +103,8 @@ class TaxaCondominio(models.Model):
     unidade_habitacional = models.ForeignKey('UnidadeHabitacional', on_delete=models.CASCADE ,related_name='minhas_taxas', null=False, blank = False,)
 
     def atualiza_valor_a_pagar(self):
+        self.valor_a_pagar = 0
+        self.save()
         itens = self.itens.all()
         for item in itens:
             self.valor_a_pagar += float(item.valor)

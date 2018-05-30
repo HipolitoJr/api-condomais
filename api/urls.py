@@ -17,4 +17,7 @@ router.register(r'tipo-despesa', views.TipoDespesaViewSet)
 urlpatterns =[
     url(r'^', include(router.urls)),
     url(r'^despesa/condominio/(?P<condominio_pk>\d+)/$', views.DespesaViewSet.distribuir_despesa_condominio),
+    url(r'^despesa/grupohabitacional/(?P<grupo_habitacional_pk>\d+)/$', views.DespesaViewSet.distribuir_despesa_grupo_habitacional),
+    url(r'^despesa/unidadehabitacional/(?P<unidade_habitacional_pk>\d+)/$', views.DespesaViewSet.distribuir_despesa_unidade_habitacional),
+
 ]

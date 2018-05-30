@@ -80,18 +80,46 @@ class DespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     @api_view(['POST'])
     def distribuir_despesa_condominio(request, condominio_pk):
-        disc = eval(request.body)
-        tipo_despesa = TipoDespesa.objects.get(pk=disc['tipo_despesa'])
-        despesa = Despesa.objects.create(mes_ano=disc['mes_ano'], valor=disc['valor'], tipo_despesa=tipo_despesa)
-        condominio = Condominio.objects.get(pk=condominio_pk)
-        condominio.distribuir_despesa(despesa)
-        print(despesa.tipo_despesa.nome)
+
         try:
-            pass
+            dicionario_despesa = eval(request.body)
+            tipo_despesa = TipoDespesa.objects.get(pk=dicionario_despesa['tipo_despesa'])
+            despesa = Despesa.objects.create(mes_ano=dicionario_despesa['mes_ano'], valor=dicionario_despesa['valor'], tipo_despesa=tipo_despesa)
+            condominio = Condominio.objects.get(pk=condominio_pk)
+            condominio.distribuir_despesa(despesa)
         except:
             return Response({"mensagem": "Erro ao lançar a despesa"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"mensagem" : "Despesa lançada com sucesso!"})
+
+    @api_view(['POST'])
+    def distribuir_despesa_grupo_habitacional(request, grupo_habitacional_pk):
+        try:
+            dicionario_despesa = eval(request.body)
+            tipo_despesa = TipoDespesa.objects.get(pk=dicionario_despesa['tipo_despesa'])
+            despesa = Despesa.objects.create(mes_ano=dicionario_despesa['mes_ano'], valor=dicionario_despesa['valor'],
+                                             tipo_despesa=tipo_despesa)
+            grupo_habitacional = GrupoHabitacional.objects.get(pk=grupo_habitacional_pk)
+            grupo_habitacional.distribuir_despesa(despesa)
+        except:
+            return Response({"mensagem": "Erro ao lançar a despesa"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"mensagem": "Despesa lançada com sucesso!"})
+
+    @api_view(['POST'])
+    def distribuir_despesa_unidade_habitacional(request, unidade_habitacional_pk):
+        try:
+            dicionario_despesa = eval(request.body)
+            tipo_despesa = TipoDespesa.objects.get(pk=dicionario_despesa['tipo_despesa'])
+            despesa = Despesa.objects.create(mes_ano=dicionario_despesa['mes_ano'], valor=dicionario_despesa['valor'],
+                                             tipo_despesa=tipo_despesa)
+            unidade_habitacional = UnidadeHabitacional.objects.get(pk=unidade_habitacional_pk)
+            unidade_habitacional.registrar_despesa(despesa)
+        except:
+            return Response({"mensagem": "Erro ao lançar a despesa"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"mensagem": "Despesa lançada com sucesso!"})
+
 
 
 

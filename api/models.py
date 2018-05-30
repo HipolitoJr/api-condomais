@@ -21,6 +21,7 @@ def criar_perfil(sender, instance, created, **kwargs):
 def salvar_perfil(sender, instance, **kwargs):
     instance.proprietario.save()
 
+
 class UnidadeHabitacional(models.Model):
 
     TIPOS_OCUPACAO = (
@@ -37,17 +38,14 @@ class UnidadeHabitacional(models.Model):
 
     def registrar_despesa(self, despesa):
         taxa = self.minhas_taxas.filter(mes_ano = despesa.mes_ano)
-        item = ItemTaxa.objects.create(taxa_condominio=taxa)
+        valor_a_pagar = self.calcula_valor_item_taxa(despesa)
 
-        if not taxa.is_empty:
-            item.despesa = despesa
-            item.valor = self.calcula_valor_item_taxa()
+        if len(taxa) > 0:
+            item = ItemTaxa.objects.create(descricao=despesa.tipo_despesa.nome,taxa_condominio=taxa[0], despesa= despesa, valor = valor_a_pagar)
 
         else:
-            taxa = TaxaCondominio.objects.create(mes_ano=despesa.mes_ano)
-            item = ItemTaxa.objects.create(taxa_condominio=taxa)
-            item.despesa = despesa
-            item.valor = self.calcula_valor_item_taxa()
+            taxa = TaxaCondominio.objects.create(mes_ano=despesa.mes_ano, unidade_habitacional=self)
+            item = ItemTaxa.objects.create(descricao=despesa.tipo_despesa.nome,taxa_condominio=taxa, despesa=despesa, valor=valor_a_pagar)
 
         item.save()
 
@@ -59,6 +57,7 @@ class UnidadeHabitacional(models.Model):
             total_de_quartos = self.grupo_habitacional.total_de_quartos()
             valor_a_pagar = (despesa.valor/total_de_quartos) * self.qtd_quartos
             return valor_a_pagar
+
 
 class GrupoHabitacional(models.Model):
 
@@ -97,11 +96,18 @@ class Condominio(models.Model):
 
 class TaxaCondominio(models.Model):
 
-    mes_ano = models.DateTimeField('Mes ano', max_length=255, null=False, blank=False)
-    data_pagamento = models.DateTimeField('Data pagamento', null=True, blank=True)
+    mes_ano = models.DateField('Mes ano', max_length=255, null=False, blank=False)
+    data_pagamento = models.DateField('Data pagamento', null=True, blank=True)
     valor_pago = models.FloatField('Valor pago', null=True, blank=True)
     valor_a_pagar = models.FloatField('Valor a pagar', null=True, blank=True)
     unidade_habitacional = models.ForeignKey('UnidadeHabitacional', on_delete=models.CASCADE ,related_name='minhas_taxas', null=False, blank = False,)
+
+    def atualiza_valor_a_pagar(self):
+        itens = self.itens.all()
+        for item in itens:
+            self.valor_a_pagar += float(item.valor)
+
+        self.save()
 
 
 class ItemTaxa(models.Model):
@@ -109,20 +115,24 @@ class ItemTaxa(models.Model):
     descricao = models.CharField('Descricao', max_length=255, null=False, blank=False)
     valor = models.FloatField('Valor', null=False, blank=False)
     taxa_condominio = models.ForeignKey(TaxaCondominio, on_delete=models.CASCADE, related_name='itens', null=False, blank=False)
-    despesa = models.OneToOneField('Despesa', null=True, blank=True)
+    despesa = models.ForeignKey('Despesa',on_delete=models.CASCADE,related_name='itens_da_despesa', null=True, blank=True)
 
+@receiver(post_save, sender=ItemTaxa)
+def atualiza_valor_a_pagar(sender, instance, created, **kwargs):
+    item = instance
+    item.taxa_condominio.atualiza_valor_a_pagar()
 
 class Despesa(models.Model):
 
     valor = models.FloatField('Valor', null=False, blank=False)
-    mes_ano = models.DateTimeField('Mes ano', null=False, blank=False)
+    mes_ano = models.DateField('Mes ano', null=False, blank=False)
     tipo_despesa = models.ForeignKey('TipoDespesa', on_delete=models.CASCADE, related_name='despesas', null=False, blank=False)
-
-    def save(self):
-        pass
 
 
 class TipoDespesa(models.Model):
 
     nome = models.CharField('Nome', max_length=255, null=False, blank=False)
     valor_rateado = models.BooleanField('Valor', null=False, blank=False)
+
+    def __str__(self):
+        return self.nome

@@ -16,4 +16,5 @@ router.register(r'tipo-despesa', views.TipoDespesaViewSet)
 
 urlpatterns =[
     url(r'^', include(router.urls)),
+    url(r'^despesa/condominio/(?P<condominio_pk>\d+)/$', views.DespesaViewSet.distribuir_despesa_condominio),
 ]

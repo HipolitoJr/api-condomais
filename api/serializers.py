@@ -62,10 +62,12 @@ class TaxaCondominioSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = TaxaCondominio
-        fields = ('mes_ano',
+        fields = ('id',
+                  'mes_ano',
                   'data_pagamento',
                   'valor_pago',
-                  'valor_a_pagar',)
+                  'valor_a_pagar',
+                  'unidade_habitacional',)
 
 
 class ItemTaxaSerializer(serializers.ModelSerializer):
@@ -82,12 +84,13 @@ class DespesaSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Despesa
-        fields = ('mes_ano',
+        fields = ('id',
+                  'mes_ano',
                   'valor',
                   'tipo_despesa',)
 
 
-class TipoDespesaSerializer(serializers.Serializer):
+class TipoDespesaSerializer(serializers.ModelSerializer):
 
     class Meta:
 

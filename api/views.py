@@ -24,25 +24,30 @@ class DefaultsMixin(object):
     paginate_by_param = 'page_size'
     max_paginate_by = 100
 
+
 class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
 class ProprietarioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Proprietario.objects.all()
     serializer_class = ProprietarioSerializer
 
+
 class UnidadeHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = UnidadeHabitacional.objects.all()
     serializer_class = UnidadeHabitacionalSerializer
 
+
 class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = GrupoHabitacional.objects.all()
     serializer_class = GrupoHabitacionalSerializer
+
 
 class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
@@ -63,15 +68,43 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
         # condominio.distribuir_despesa(despesa)
         return Response({"mensagem": "Job reaberto!"}, status=status.HTTP_200_OK)
 
+
 class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = TaxaCondominio.objects.all()
     serializer_class = TaxaCondominioSerializer
 
+    @api_view(['PUT'])
+    def registrar_pagamento(request, taxa_condominio_pk):
+        dicionario_taxa = eval(request.body)
+        taxa_condominio = TaxaCondominio.objects.get(pk=taxa_condominio_pk)
+        taxa_condominio.valor_pago = dicionario_taxa['valor_pago']
+        taxa_condominio.realizar_pagamento(dicionario_taxa['valor_pago'])
+        taxa_condominio.save()
+        try:
+            pass
+        except:
+            return Response({"mensagem": "Erro ao lançar pagamento"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"mensagem": "Pagamento lançado com sucesso!"})
+
+    @api_view(['PUT'])
+    def aprovar_pagamento(request, taxa_condominio_pk):
+        try:
+            dicionario_taxa = eval(request.body)
+            taxa_de_condominio = TaxaCondominio.objects.get(pk=taxa_condominio_pk)
+            taxa_de_condominio.pago = dicionario_taxa['pago']
+            taxa_de_condominio.save()
+        except:
+            return Response({"mensagem": "Erro ao aprovar pagamento"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"mensagem": "Pagamento aprovado com sucesso!"})
+
+
+
 class ItemTaxaViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = ItemTaxa.objects.all()
     serializer_class = ItemTaxaSerializer
+
 
 class DespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
@@ -108,19 +141,18 @@ class DespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     @api_view(['POST'])
     def distribuir_despesa_unidade_habitacional(request, unidade_habitacional_pk):
+        dicionario_despesa = eval(request.body)
+        tipo_despesa = TipoDespesa.objects.get(pk=dicionario_despesa['tipo_despesa'])
+        despesa = Despesa.objects.create(mes_ano=dicionario_despesa['mes_ano'], valor=dicionario_despesa['valor'],
+                                         tipo_despesa=tipo_despesa)
+        unidade_habitacional = UnidadeHabitacional.objects.get(pk=unidade_habitacional_pk)
+        unidade_habitacional.registrar_despesa(despesa)
         try:
-            dicionario_despesa = eval(request.body)
-            tipo_despesa = TipoDespesa.objects.get(pk=dicionario_despesa['tipo_despesa'])
-            despesa = Despesa.objects.create(mes_ano=dicionario_despesa['mes_ano'], valor=dicionario_despesa['valor'],
-                                             tipo_despesa=tipo_despesa)
-            unidade_habitacional = UnidadeHabitacional.objects.get(pk=unidade_habitacional_pk)
-            unidade_habitacional.registrar_despesa(despesa)
+            pass
         except:
             return Response({"mensagem": "Erro ao lançar a despesa"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"mensagem": "Despesa lançada com sucesso!"})
-
-
 
 
 class TipoDespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):

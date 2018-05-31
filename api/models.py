@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import datetime
 
 
 class Proprietario(models.Model):
@@ -37,14 +38,15 @@ class UnidadeHabitacional(models.Model):
     grupo_habitacional = models.ForeignKey('GrupoHabitacional', on_delete=models.CASCADE, related_name='unidades_habitacionais', null=False, blank=False)
 
     def registrar_despesa(self, despesa):
-        taxa = self.minhas_taxas.filter(mes_ano = despesa.mes_ano)
+        taxa = self.minhas_taxas.all().order_by('-mes_ano').first()
         valor_a_pagar = self.calcula_valor_item_taxa(despesa)
 
-        if len(taxa) > 0:
-            item = ItemTaxa.objects.create(descricao=despesa.tipo_despesa.nome,taxa_condominio=taxa[0], despesa= despesa, valor = valor_a_pagar)
+        if taxa is not None and taxa.data_pagamento > despesa.mes_ano:
+            item = ItemTaxa.objects.create(descricao=despesa.tipo_despesa.nome,taxa_condominio=taxa, despesa= despesa, valor = valor_a_pagar)
 
         else:
-            taxa = TaxaCondominio.objects.create(mes_ano=despesa.mes_ano, unidade_habitacional=self)
+            data_pagamento = self.capturar_data()
+            taxa = TaxaCondominio.objects.create(mes_ano=despesa.mes_ano, unidade_habitacional=self, data_pagamento=data_pagamento)
             item = ItemTaxa.objects.create(descricao=despesa.tipo_despesa.nome,taxa_condominio=taxa, despesa=despesa, valor=valor_a_pagar)
 
         item.save()
@@ -58,6 +60,16 @@ class UnidadeHabitacional(models.Model):
             valor_a_pagar = (despesa.valor/total_de_quartos) * self.qtd_quartos
             return valor_a_pagar
 
+    def capturar_data(self):
+        dia_atual = datetime.date.today().day
+        mes_atual = datetime.date.today().month
+        ano_atual = datetime.date.today().year
+
+        if dia_atual > 20 and mes_atual < 12:
+            return datetime.date(ano_atual,mes_atual+1,20)
+        elif dia_atual > 20 and mes_atual == 12:
+            return datetime.date(ano_atual+1, 1, 20)
+        return datetime.date(ano_atual, mes_atual, 20)
 
 class GrupoHabitacional(models.Model):
 
@@ -97,10 +109,11 @@ class Condominio(models.Model):
 class TaxaCondominio(models.Model):
 
     mes_ano = models.DateField('Mes ano', max_length=255, null=False, blank=False)
-    data_pagamento = models.DateField('Data pagamento', null=True, blank=True)
+    data_vencimento = models.DateField('Data pagamento', null=True, blank=True)
     valor_pago = models.FloatField('Valor pago', null=True, blank=True)
     valor_a_pagar = models.FloatField('Valor a pagar', null=True, blank=True)
     unidade_habitacional = models.ForeignKey('UnidadeHabitacional', on_delete=models.CASCADE ,related_name='minhas_taxas', null=False, blank = False,)
+    pago = models.BooleanField("Pago", default=False, null=False, blank=False)
 
     def atualiza_valor_a_pagar(self):
         self.valor_a_pagar = 0
@@ -108,6 +121,21 @@ class TaxaCondominio(models.Model):
         itens = self.itens.all()
         for item in itens:
             self.valor_a_pagar += float(item.valor)
+
+        self.save()
+
+    def realizar_pagamento(self, valor_recebido):
+        data_hoje = datetime.date.today()
+        self.valor_pago = valor_recebido
+
+        if data_hoje > self.data_vencimento:
+            try:
+                multa = TipoDespesa.objects.get(nome='Multa')
+            except:
+                multa = TipoDespesa.objects.create(nome = 'Multa', valor_rateado = False)
+
+            despesa = Despesa.objects.create(mes_ano = datetime.date.today(), valor = self.valor_a_pagar * 0.02, tipo_despesa = multa)
+            self.unidade_habitacional.registrar_despesa(despesa)
 
         self.save()
 

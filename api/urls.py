@@ -10,8 +10,8 @@ router.register(r'unidadehabitacional', views.UnidadeHabitacionalViewSet)
 router.register(r'grupohabitacional', views.GrupoHabitacionalViewSet)
 router.register(r'condominio', views.CondominioViewSet)
 router.register(r'taxacondominio', views.TaxaCondominioViewSet)
-router.register(r'itemtaxa', views.ItemTaxaViewSet)
-router.register(r'despesa', views.DespesaViewSet)
+# router.register(r'itemtaxa', views.ItemTaxaViewSet)
+# router.register(r'despesa', views.DespesaViewSet)
 router.register(r'tipodespesa', views.TipoDespesaViewSet)
 
 urlpatterns =[

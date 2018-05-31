@@ -9,6 +9,7 @@ class Proprietario(models.Model):
 
     usuario = models.OneToOneField(User, null=False, blank=False)
     telefone = models.CharField('Telefone', max_length=255, null=False, blank=False)
+    sindico = models.BooleanField('sindico',default=False, null=False, blank=False )
 
     def __str__(self):
         return self.usuario.username
@@ -17,10 +18,17 @@ class Proprietario(models.Model):
 def criar_perfil(sender, instance, created, **kwargs):
     if created:
         Proprietario.objects.create(usuario=instance)
+        tamanho_maximo_de_md5 = 77
+        if (len(instance.password)) < tamanho_maximo_de_md5:
+            instance.set_password(instance.password)
+            instance.save()
+
+
 
 @receiver(post_save, sender=User)
 def salvar_perfil(sender, instance, **kwargs):
     instance.proprietario.save()
+
 
 
 class UnidadeHabitacional(models.Model):
@@ -36,6 +44,9 @@ class UnidadeHabitacional(models.Model):
     ocupacao = models.CharField('Ocupacao', max_length=255, choices=TIPOS_OCUPACAO, default='vazio', null=False, blank=False)
     proprietario = models.ForeignKey(Proprietario, on_delete=models.CASCADE, related_name='minhas_unidades', null=False, blank=False)
     grupo_habitacional = models.ForeignKey('GrupoHabitacional', on_delete=models.CASCADE, related_name='unidades_habitacionais', null=False, blank=False)
+
+    def __str__(self):
+        return self.descricao
 
     def registrar_despesa(self, despesa):
         taxa = self.minhas_taxas.all().order_by('-mes_ano').first()
@@ -77,6 +88,9 @@ class GrupoHabitacional(models.Model):
     qtd_unidades = models.IntegerField('Qtd unidades', null=False, blank=False)
     condominio = models.ForeignKey('Condominio', on_delete=models.CASCADE, related_name='grupos_habitacionais', null=False, blank=False)
 
+    def __str__(self):
+        return self.descricao
+
     def total_de_quartos(self):
         unidades = self.unidades_habitacionais.all()
         total_quartos = 0
@@ -98,6 +112,10 @@ class Condominio(models.Model):
     nome = models.CharField('Nome', max_length=255, null=False, blank=False)
     endereco = models.CharField('Endereco', max_length=255, null=False, blank=False)
     cnpj = models.CharField('CNPJ', max_length=255, null=False, blank=False)
+    sindico = models.OneToOneField(Proprietario, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.nome
 
     def distribuir_despesa(self, despesa):
         grupos = self.grupos_habitacionais.all()
@@ -114,6 +132,11 @@ class TaxaCondominio(models.Model):
     valor_a_pagar = models.FloatField('Valor a pagar', null=True, blank=True)
     unidade_habitacional = models.ForeignKey('UnidadeHabitacional', on_delete=models.CASCADE ,related_name='minhas_taxas', null=False, blank = False,)
     pago = models.BooleanField("Pago", default=False, null=False, blank=False)
+
+    def __str__(self):
+        retorno = "Referente a: "
+        retorno += str(self.mes_ano)
+        return retorno
 
     def atualiza_valor_a_pagar(self):
         self.valor_a_pagar = 0
@@ -147,6 +170,9 @@ class ItemTaxa(models.Model):
     taxa_condominio = models.ForeignKey(TaxaCondominio, on_delete=models.CASCADE, related_name='itens', null=False, blank=False)
     despesa = models.ForeignKey('Despesa',on_delete=models.CASCADE,related_name='itens_da_despesa', null=True, blank=True)
 
+    def __str__(self):
+        return self.descricao
+
 @receiver(post_save, sender=ItemTaxa)
 def atualiza_valor_a_pagar(sender, instance, created, **kwargs):
     item = instance
@@ -157,6 +183,9 @@ class Despesa(models.Model):
     valor = models.FloatField('Valor', null=False, blank=False)
     mes_ano = models.DateField('Mes ano', null=False, blank=False)
     tipo_despesa = models.ForeignKey('TipoDespesa', on_delete=models.CASCADE, related_name='despesas', null=False, blank=False)
+
+    def __str__(self):
+        return self.valor
 
 
 class TipoDespesa(models.Model):

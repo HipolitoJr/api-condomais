@@ -9,7 +9,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = User
-        fields = ('username',
+        fields = ('id',
+                  'first_name',
+                  'last_name',
+                  'username',
                   'email',
                   'password',)
 
@@ -21,8 +24,10 @@ class ProprietarioSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Proprietario
-        fields = ('usuario',
-                  'telefone',)
+        fields = ('id',
+                  'usuario',
+                  'telefone',
+                  'sindico',)
 
 
 class UnidadeHabitacionalSerializer(serializers.ModelSerializer):
@@ -37,25 +42,59 @@ class UnidadeHabitacionalSerializer(serializers.ModelSerializer):
                   'proprietario',
                   'grupo_habitacional',)
 
-
 class GrupoHabitacionalSerializer(serializers.ModelSerializer):
 
     class Meta:
 
         model = GrupoHabitacional
-        fields = ('descricao',
+        fields = ('id',
+                  'descricao',
                   'qtd_unidades',
                   'condominio',)
 
+class GrupoHabitacionalDetalhadoSerializer(serializers.ModelSerializer):
+    unidades_habitacionais = UnidadeHabitacionalSerializer(many=True, read_only= True)
+    class Meta:
+
+        model = GrupoHabitacional
+        fields = ('id',
+                  'descricao',
+                  'qtd_unidades',
+                  'condominio',
+                  'unidades_habitacionais',)
 
 class CondominioSerializer(serializers.ModelSerializer):
 
     class Meta:
 
         model = Condominio
-        fields = ('nome',
+        fields = ('id',
+                  'nome',
                   'endereco',
-                  'cnpj',)
+                  'cnpj',
+                  'sindico',)
+
+class CondominioDetalhadoSerializer(serializers.ModelSerializer):
+    grupos_habitacionais = GrupoHabitacionalSerializer(many= True, read_only=True)
+    class Meta:
+
+        model = Condominio
+        fields = ('id',
+                  'nome',
+                  'endereco',
+                  'cnpj',
+                  'sindico',
+                  'grupos_habitacionais',)
+
+
+class ItemTaxaSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ItemTaxa
+        fields = ('id',
+                  'descricao',
+                  'valor',
+                  'taxa_condominio',)
 
 
 class TaxaCondominioSerializer(serializers.ModelSerializer):
@@ -63,22 +102,51 @@ class TaxaCondominioSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = TaxaCondominio
+
         fields = ('id',
                   'mes_ano',
-                  'data_pagamento',
+                  'data_vencimento',
                   'valor_pago',
                   'valor_a_pagar',
                   'unidade_habitacional',
                   'pago',)
 
+        read_only_fields = ('id',
+                            'pago',)
 
-class ItemTaxaSerializer(serializers.ModelSerializer):
+
+class TaxaCondominioDetalhadoSerializer(serializers.ModelSerializer):
+    itens = ItemTaxaSerializer(many=True, read_only=True)
 
     class Meta:
-        model = ItemTaxa
-        fields = ('descricao',
-                  'valor',
-                  'taxa_condominio',)
+
+        model = TaxaCondominio
+
+        fields = ('id',
+                  'mes_ano',
+                  'data_vencimento',
+                  'valor_pago',
+                  'valor_a_pagar',
+                  'unidade_habitacional',
+                  'pago',
+                  'itens',)
+
+        read_only_fields = ('id',
+                            'pago',)
+
+class UnidadeHabitacionalDetalhadaSerializer(serializers.ModelSerializer):
+    minhas_taxas = TaxaCondominioSerializer(many=True, read_only=True)
+
+    class Meta:
+
+        model = UnidadeHabitacional
+        fields = ('id',
+                  'descricao',
+                  'qtd_quartos',
+                  'ocupacao',
+                  'proprietario',
+                  'grupo_habitacional',
+                  'minhas_taxas',)
 
 
 class DespesaSerializer(serializers.ModelSerializer):
@@ -97,7 +165,8 @@ class TipoDespesaSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = TipoDespesa
-        fields = ('nome',
+        fields = ('id',
+                  'nome',
                   'valor_rateado',)
 
 

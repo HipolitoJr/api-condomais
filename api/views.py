@@ -71,7 +71,12 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         if not user.is_superuser or user.sindico:
             minhas_unidades = user.proprietario.minhas_unidades.all()
             unidade = minhas_unidades[0]
-            queryset = GrupoHabitacional.objects.filter(condominio__pk=unidade.grupo_habitacional.condominio.pk )
+            queryset = GrupoHabitacional.objects.filter(condominio__pk = unidade.grupo_habitacional.condominio.pk )
+
+        elif user.is_superuser or user.sindico:
+            minhas_unidades = user.proprietario.minhas_unidades.all()
+            unidade = minhas_unidades[0]
+            queryset = GrupoHabitacional.objects.filter(pk=unidade.grupo_habitacional.pk)
 
         return queryset
 

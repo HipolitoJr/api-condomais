@@ -30,7 +30,8 @@ class UnidadeHabitacionalSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = UnidadeHabitacional
-        fields = ('descricao',
+        fields = ('id',
+                  'descricao',
                   'qtd_quartos',
                   'ocupacao',
                   'proprietario',
@@ -67,7 +68,8 @@ class TaxaCondominioSerializer(serializers.ModelSerializer):
                   'data_pagamento',
                   'valor_pago',
                   'valor_a_pagar',
-                  'unidade_habitacional',)
+                  'unidade_habitacional',
+                  'pago',)
 
 
 class ItemTaxaSerializer(serializers.ModelSerializer):

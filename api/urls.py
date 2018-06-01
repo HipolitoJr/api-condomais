@@ -21,4 +21,6 @@ urlpatterns =[
     url(r'^despesa/unidadehabitacional/(?P<unidade_habitacional_pk>\d+)/$', views.DespesaViewSet.distribuir_despesa_unidade_habitacional),
     url(r'^taxacondominio/(?P<taxa_condominio_pk>\d+)/pagamento/$', views.TaxaCondominioViewSet.registrar_pagamento),
     url(r'^taxacondominio/(?P<taxa_condominio_pk>\d+)/aprovarpagamento/$', views.TaxaCondominioViewSet.aprovar_pagamento),
+    url(r'^grupohabitacional/(?P<grupo_habitacional_pk>\d+)/unidadehabitacional/(?P<unidade_habitacional_pk>\d+)/taxas/$', views.TaxaCondominioViewSet.as_view({'post': 'create', 'get': 'list'})),
+
 ]

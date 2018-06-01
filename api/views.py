@@ -52,7 +52,7 @@ class UnidadeHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
         elif user.proprietario.sindico:
             queryset = UnidadeHabitacional.objects.filter(
-                grupo_habitacional__condominio__pk= Condominio.objects.get(sindico__pk =user.proprietario.pk))
+                grupo_habitacional__condominio__sindico__pk = user.proprietario.pk)
 
         return queryset
 
@@ -60,6 +60,7 @@ class UnidadeHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         unidade_habitacional = self.get_object()
         serializer = UnidadeHabitacionalDetalhadaSerializer(unidade_habitacional)
         return Response(serializer.data)
+
 
 class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
@@ -71,12 +72,9 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         queryset = GrupoHabitacional.objects.all()
 
         if not user.proprietario.sindico:
-            try:
-                minhas_unidades = user.proprietario.minhas_unidades.all()
-                unidade = minhas_unidades[0]
-                queryset = GrupoHabitacional.objects.filter(condominio__pk = unidade.grupo_habitacional.condominio.pk)
-            except:
-                queryset = GrupoHabitacional.objects.filter(condominio__pk = 0)
+            queryset = GrupoHabitacional.objects.filter(
+                unidades_habitacionais__proprietario__pk = user.proprietario.pk)
+
 
         elif user.proprietario.sindico:
                 queryset = GrupoHabitacional.objects.filter(condominio__sindico__pk = user.proprietario.pk)
@@ -92,6 +90,7 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         serializer = GrupoHabitacionalDetalhadoSerializer(grupo_habitacional)
         return Response(serializer.data)
 
+
 class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Condominio.objects.all();
@@ -104,19 +103,13 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        try:
-            minhas_unidades = user.proprietario.minhas_unidades.all()
-            unidade = minhas_unidades[0]
-        except:
-            queryset = Condominio.objects.filter(sindico__pk = user.proprietario.pk)
-            return queryset
 
         if user.is_superuser:
             queryset = Condominio.objects.all()
         elif user.proprietario.sindico:
             queryset = Condominio.objects.filter(sindico__pk = user.proprietario.pk)
         else:
-            queryset = Condominio.objects.filter(pk = unidade.grupo_habitacional.condominio.pk)
+            queryset = Condominio.objects.filter(grupos_habitacionais__unidades_habitacionais__proprietario__pk = user.proprietario.pk )
 
         return queryset
 
@@ -132,7 +125,6 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-
 class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = TaxaCondominio.objects.all()
@@ -141,7 +133,6 @@ class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-
         queryset = TaxaCondominio.objects.all()
 
         if user.proprietario.sindico:
@@ -182,6 +173,7 @@ class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
         except:
             return Response({"mensagem": "Erro ao aprovar pagamento"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"mensagem": "Pagamento aprovado com sucesso!"})
+
 
 class ItemTaxaViewSet(DefaultsMixin, viewsets.ModelViewSet):
 

@@ -100,16 +100,26 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
         serializer = CondominioDetalhadoSerializer(condominio)
         return Response(serializer.data)
 
+    def get_queryset(self):
+        user = self.request.user
 
-    def create(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            serializer = CondominioSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        queryset = Condominio.objects.all();
 
-        return Response({"mensagem": "Você não tem permissão para criar condominios"}, status=status.HTTP_400_BAD_REQUEST)
+        if user.sindico:
+            queryset = Condominio.objects.filter(sindico__pk = user.pk)
+        else:
+            queryset = Condominio.objects.filter(sindico__pk = user.pk)
+
+
+    # def create(self, request, *args, **kwargs):
+    #     if request.user.is_superuser:
+    #         serializer = CondominioSerializer(data=request.data)
+    #         serializer.is_valid(raise_exception=True)
+    #         self.perform_create(serializer)
+    #         headers = self.get_success_headers(serializer.data)
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    #
+    #     return Response({"mensagem": "Você não tem permissão para criar condominios"}, status=status.HTTP_400_BAD_REQUEST)
 
 class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
@@ -123,13 +133,11 @@ class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
         queryset = TaxaCondominio.objects.all()
 
         if user.proprietario.sindico:
-            minhas_unidades = user.proprietario.minhas_unidades.all()
-            unidade = minhas_unidades[0]
             queryset = TaxaCondominio.objects.filter(
-                unidade_habitacional__grupo_habitacional__condominio__pk = unidade.grupo_habitacional.condominio.pk)
+                unidade_habitacional__grupo_habitacional__condominio__sindico__pk = user.pk)
 
         elif not user.is_superuser:
-             queryset = TaxaCondominio.objects.filter(unidade_habitacional__proprietario = user.proprietario)
+             queryset = TaxaCondominio.objects.filter(unidade_habitacional__proprietario__pk = user.proprietario.pk)
 
         return queryset
 

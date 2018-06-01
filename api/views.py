@@ -75,7 +75,6 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
             queryset = GrupoHabitacional.objects.filter(
                 unidades_habitacionais__proprietario__pk = user.proprietario.pk)
 
-
         elif user.proprietario.sindico:
                 queryset = GrupoHabitacional.objects.filter(condominio__sindico__pk = user.proprietario.pk)
 
@@ -108,7 +107,7 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
             queryset = Condominio.objects.all()
         elif user.proprietario.sindico:
             queryset = Condominio.objects.filter(sindico__pk = user.proprietario.pk)
-        else:
+        elif not user.proprietario.sindico:
             queryset = Condominio.objects.filter(grupos_habitacionais__unidades_habitacionais__proprietario__pk = user.proprietario.pk )
 
         return queryset
@@ -158,7 +157,7 @@ class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
             taxa_condominio = TaxaCondominio.objects.get(pk=taxa_condominio_pk)
             taxa_condominio.valor_pago = dicionario_taxa['valor_pago']
             taxa_condominio.realizar_pagamento(dicionario_taxa['valor_pago'])
-            taxa_condominio.save()
+
         except:
             return Response({"mensagem": "Erro ao lançar pagamento"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"mensagem": "Pagamento lançado com sucesso!"})

@@ -72,8 +72,9 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         queryset = GrupoHabitacional.objects.all()
 
         if not user.proprietario.sindico:
-            queryset = Condominio.objects.filter(
+            queryset = GrupoHabitacional.objects.filter(
                 unidades_habitacionais__proprietario__pk = user.proprietario.pk)
+
 
         elif user.proprietario.sindico:
                 queryset = GrupoHabitacional.objects.filter(condominio__sindico__pk = user.proprietario.pk)
@@ -108,7 +109,7 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
         elif user.proprietario.sindico:
             queryset = Condominio.objects.filter(sindico__pk = user.proprietario.pk)
         else:
-            queryset = Condominio.objects.filter(condominio__grupos_habitacionais__unidades_habitacionais__proprietario__pk = user.proprietario.pk )
+            queryset = Condominio.objects.filter(grupos_habitacionais__unidades_habitacionais__proprietario__pk = user.proprietario.pk )
 
         return queryset
 
@@ -132,7 +133,6 @@ class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-
         queryset = TaxaCondominio.objects.all()
 
         if user.proprietario.sindico:

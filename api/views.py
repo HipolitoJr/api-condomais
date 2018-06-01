@@ -86,7 +86,6 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
 
 
-
     def retrieve(self, request, *args, **kwargs):
 
         grupo_habitacional = self.get_object()
@@ -115,7 +114,7 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
         if user.is_superuser:
             queryset = Condominio.objects.all()
         elif user.proprietario.sindico:
-            queryset = Condominio.objects.filter(sindico__pk = user.pk)
+            queryset = Condominio.objects.filter(sindico__pk = user.proprietario.pk)
         else:
             queryset = Condominio.objects.filter(pk = unidade.grupo_habitacional.condominio.pk)
 

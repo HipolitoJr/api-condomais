@@ -47,10 +47,12 @@ class UnidadeHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         user = self.request.user
         queryset = UnidadeHabitacional.objects.all()
 
-        if not user.is_superuser or user.sindico:
-            minhas_unidades = user.proprietario.minhas_unidades.all()
-            unidade = minhas_unidades[0]
-            queryset = UnidadeHabitacional.objects.filter(grupo_habitacional__condominio__pk=unidade.grupo_habitacional.condominio.pk)
+        if  not user.proprietario.sindico:
+            queryset = UnidadeHabitacional.objects.filter(proprietario__pk = user.proprietario.pk)
+
+        elif user.proprietario.sindico:
+            queryset = UnidadeHabitacional.objects.filter(
+                grupo_habitacional__condominio__pk= Condominio.objects.get(sindico__pk =user.proprietario.pk))
 
         return queryset
 
@@ -68,18 +70,18 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         user = self.request.user
         queryset = GrupoHabitacional.objects.all()
 
-        if not user.is_superuser or user.sindico:
-            minhas_unidades = user.proprietario.minhas_unidades.all()
-            unidade = minhas_unidades[0]
-            queryset = GrupoHabitacional.objects.filter(condominio__pk = unidade.grupo_habitacional.condominio.pk )
+        if not user.proprietario.sindico:
+            try:
+                minhas_unidades = user.proprietario.minhas_unidades.all()
+                unidade = minhas_unidades[0]
+                queryset = GrupoHabitacional.objects.filter(condominio__pk = unidade.grupo_habitacional.condominio.pk)
+            except:
+                queryset = GrupoHabitacional.objects.filter(condominio__pk = 0)
 
-        elif user.is_superuser or user.sindico:
-            minhas_unidades = user.proprietario.minhas_unidades.all()
-            unidade = minhas_unidades[0]
-            queryset = GrupoHabitacional.objects.filter(pk=unidade.grupo_habitacional.pk)
+        elif user.proprietario.sindico:
+                queryset = GrupoHabitacional.objects.filter(condominio__sindico__pk = user.proprietario.pk)
 
         return queryset
-
 
 
 
@@ -102,24 +104,34 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        try:
+            minhas_unidades = user.proprietario.minhas_unidades.all()
+            unidade = minhas_unidades[0]
+        except:
+            queryset = Condominio.objects.filter(sindico__pk = user.proprietario.pk)
+            return queryset
 
-        queryset = Condominio.objects.all();
-
-        if user.sindico:
-            queryset = Condominio.objects.filter(sindico__pk = user.pk)
+        if user.is_superuser:
+            queryset = Condominio.objects.all()
+        elif user.proprietario.sindico:
+            queryset = Condominio.objects.filter(sindico__pk = user.proprietario.pk)
         else:
-            queryset = Condominio.objects.filter(sindico__pk = user.pk)
+            queryset = Condominio.objects.filter(pk = unidade.grupo_habitacional.condominio.pk)
+
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+
+        proprietario = Proprietario.objects.get(pk=request.data['sindico'])
+        proprietario.sindico = True
+        proprietario.save()
+        serializer = CondominioSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-    # def create(self, request, *args, **kwargs):
-    #     if request.user.is_superuser:
-    #         serializer = CondominioSerializer(data=request.data)
-    #         serializer.is_valid(raise_exception=True)
-    #         self.perform_create(serializer)
-    #         headers = self.get_success_headers(serializer.data)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    #
-    #     return Response({"mensagem": "Você não tem permissão para criar condominios"}, status=status.HTTP_400_BAD_REQUEST)
 
 class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 

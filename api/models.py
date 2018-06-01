@@ -23,13 +23,9 @@ def criar_perfil(sender, instance, created, **kwargs):
             instance.set_password(instance.password)
             instance.save()
 
-
-
 @receiver(post_save, sender=User)
 def salvar_perfil(sender, instance, **kwargs):
     instance.proprietario.save()
-
-
 
 class UnidadeHabitacional(models.Model):
 
@@ -50,14 +46,15 @@ class UnidadeHabitacional(models.Model):
 
     def registrar_despesa(self, despesa):
         taxa = self.minhas_taxas.all().order_by('-mes_ano').first()
+        despesa = Despesa.objects.get(pk=despesa.id)
         valor_a_pagar = self.calcula_valor_item_taxa(despesa)
 
-        if taxa is not None and taxa.data_pagamento > despesa.mes_ano:
+        if taxa is not None and taxa.data_vencimento > despesa.mes_ano:
             item = ItemTaxa.objects.create(descricao=despesa.tipo_despesa.nome,taxa_condominio=taxa, despesa= despesa, valor = valor_a_pagar)
 
         else:
-            data_pagamento = self.capturar_data()
-            taxa = TaxaCondominio.objects.create(mes_ano=despesa.mes_ano, unidade_habitacional=self, data_pagamento=data_pagamento)
+            data_vencimento = self.capturar_data()
+            taxa = TaxaCondominio.objects.create(mes_ano=despesa.mes_ano, unidade_habitacional=self, data_vencimento=data_vencimento)
             item = ItemTaxa.objects.create(descricao=despesa.tipo_despesa.nome,taxa_condominio=taxa, despesa=despesa, valor=valor_a_pagar)
 
         item.save()
@@ -106,7 +103,6 @@ class GrupoHabitacional(models.Model):
         for unidade in unidades:
             unidade.registrar_despesa(despesa)
 
-
 class Condominio(models.Model):
 
     nome = models.CharField('Nome', max_length=255, null=False, blank=False)
@@ -122,7 +118,6 @@ class Condominio(models.Model):
 
         for grupo in grupos:
             grupo.distribuir_despesa(despesa)
-
 
 class TaxaCondominio(models.Model):
 
@@ -162,7 +157,6 @@ class TaxaCondominio(models.Model):
 
         self.save()
 
-
 class ItemTaxa(models.Model):
 
     descricao = models.CharField('Descricao', max_length=255, null=False, blank=False)
@@ -186,7 +180,6 @@ class Despesa(models.Model):
 
     def __str__(self):
         return self.valor
-
 
 class TipoDespesa(models.Model):
 

@@ -25,34 +25,31 @@ class DefaultsMixin(object):
     paginate_by_param = 'page_size'
     max_paginate_by = 100
 
-
 class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
 
 class ProprietarioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = Proprietario.objects.all()
     serializer_class = ProprietarioSerializer
 
-
 class UnidadeHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
-    queryset = UnidadeHabitacional.objects.all()
+    queryset = UnidadeHabitacional.objects.all().order_by('id')
     serializer_class = UnidadeHabitacionalSerializer
 
     def get_queryset(self):
         user = self.request.user
-        queryset = UnidadeHabitacional.objects.all()
+        queryset = UnidadeHabitacional.objects.all().order_by('-id')
 
         if  not user.proprietario.sindico:
-            queryset = UnidadeHabitacional.objects.filter(proprietario__pk = user.proprietario.pk)
+            queryset = UnidadeHabitacional.objects.filter(proprietario__pk = user.proprietario.pk).order_by('-id')
 
         elif user.proprietario.sindico:
             queryset = UnidadeHabitacional.objects.filter(
-                grupo_habitacional__condominio__sindico__pk = user.proprietario.pk)
+                grupo_habitacional__condominio__sindico__pk = user.proprietario.pk).order_by('-id')
 
         return queryset
 
@@ -61,7 +58,6 @@ class UnidadeHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         serializer = UnidadeHabitacionalDetalhadaSerializer(unidade_habitacional)
         return Response(serializer.data)
 
-
 class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = GrupoHabitacional.objects.all()
@@ -69,15 +65,15 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = GrupoHabitacional.objects.all()
+        queryset = GrupoHabitacional.objects.all().order_by('id')
 
         if not user.proprietario.sindico:
             queryset = GrupoHabitacional.objects.filter(
-                unidades_habitacionais__proprietario__pk = user.proprietario.pk)
+                unidades_habitacionais__proprietario__pk = user.proprietario.pk).order_by('id')
 
 
         elif user.proprietario.sindico:
-                queryset = GrupoHabitacional.objects.filter(condominio__sindico__pk = user.proprietario.pk)
+                queryset = GrupoHabitacional.objects.filter(condominio__sindico__pk = user.proprietario.pk).order_by('id')
 
         return queryset
 
@@ -89,7 +85,6 @@ class GrupoHabitacionalViewSet(DefaultsMixin, viewsets.ModelViewSet):
         grupo_habitacional = self.get_object()
         serializer = GrupoHabitacionalDetalhadoSerializer(grupo_habitacional)
         return Response(serializer.data)
-
 
 class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
@@ -123,7 +118,6 @@ class CondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
 
 class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
@@ -174,12 +168,10 @@ class TaxaCondominioViewSet(DefaultsMixin, viewsets.ModelViewSet):
             return Response({"mensagem": "Erro ao aprovar pagamento"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"mensagem": "Pagamento aprovado com sucesso!"})
 
-
 class ItemTaxaViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     queryset = ItemTaxa.objects.all()
     serializer_class = ItemTaxaSerializer
-
 
 class DespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
@@ -227,7 +219,6 @@ class DespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):
             return Response({"mensagem": "Erro ao lançar a despesa"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"mensagem": "Despesa lançada com sucesso!"})
-
 
 class TipoDespesaViewSet(DefaultsMixin, viewsets.ModelViewSet):
 

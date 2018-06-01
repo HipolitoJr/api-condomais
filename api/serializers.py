@@ -16,7 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
                   'email',
                   'password',)
 
-
 class ProprietarioSerializer(serializers.ModelSerializer):
 
     #usuario = UserSerializer(many=False)
@@ -28,7 +27,6 @@ class ProprietarioSerializer(serializers.ModelSerializer):
                   'usuario',
                   'telefone',
                   'sindico',)
-
 
 class UnidadeHabitacionalSerializer(serializers.ModelSerializer):
 
@@ -86,7 +84,6 @@ class CondominioDetalhadoSerializer(serializers.ModelSerializer):
                   'sindico',
                   'grupos_habitacionais',)
 
-
 class ItemTaxaSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -95,7 +92,6 @@ class ItemTaxaSerializer(serializers.ModelSerializer):
                   'descricao',
                   'valor',
                   'taxa_condominio',)
-
 
 class TaxaCondominioSerializer(serializers.ModelSerializer):
 
@@ -113,7 +109,6 @@ class TaxaCondominioSerializer(serializers.ModelSerializer):
 
         read_only_fields = ('id',
                             'pago',)
-
 
 class TaxaCondominioDetalhadoSerializer(serializers.ModelSerializer):
     itens = ItemTaxaSerializer(many=True, read_only=True)
@@ -148,7 +143,6 @@ class UnidadeHabitacionalDetalhadaSerializer(serializers.ModelSerializer):
                   'grupo_habitacional',
                   'minhas_taxas',)
 
-
 class DespesaSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -158,7 +152,6 @@ class DespesaSerializer(serializers.ModelSerializer):
                   'mes_ano',
                   'valor',
                   'tipo_despesa',)
-
 
 class TipoDespesaSerializer(serializers.ModelSerializer):
 

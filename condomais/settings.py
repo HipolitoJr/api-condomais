@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'condomais-api.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'condomais.herokuapp.com']
 
 
 # Application definition

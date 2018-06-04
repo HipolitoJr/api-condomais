@@ -1,1 +1,0 @@
-web: gunicorn condomais.wsgi --log-file -

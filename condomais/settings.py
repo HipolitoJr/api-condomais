@@ -95,15 +95,9 @@ WSGI_APPLICATION = 'condomais.wsgi.application'
 #     }
 # }
 
-default_dburl = {'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'db_condomais',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': '127.0.0.1',
-            'PORT': '5432',}
+default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
 DATABASES = { 'default': config('DATABASE_URL', default=default_dburl, cast=dburl), }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
